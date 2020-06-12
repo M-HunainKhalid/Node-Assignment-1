@@ -3,6 +3,7 @@ const requestHandler = (req, res) => {
   const method = req.method;
 
   if (url === "/") {
+    res.setHeader("Content-Type", "text/html");
     res.write("<html>");
     res.write("<head><title>Enter Message</title></head>");
     res.write(
@@ -13,6 +14,7 @@ const requestHandler = (req, res) => {
   }
 
   if (url === "/users") {
+    res.setHeader("Content-Type", "text/html");
     res.write("<html>");
     res.write("<head><title>Enter Message</title></head>");
     res.write("<body><ol><li>Hunain</li><li>Khalid</li></ol></body>");
@@ -21,14 +23,17 @@ const requestHandler = (req, res) => {
   }
 
   if (url === "/create-user" && method === "POST") {
+    const body = [];
     req.on("data", (chunk) => {
-      console.log(chunk.toString().split('=')[1]);
+      body.push(chunk);
     });
-    return req.on("end", () => {
-      res.statusCode = 302;
-      res.setHeader("Location", "/");
-      return res.end();
+    req.on("end", () => {
+      const parsedBody = Buffer.concat(body).toString();
+      console.log(parsedBody.split("=")[1]);
     });
+    res.statusCode = 302;
+    res.setHeader("Location", "/");
+    return res.end();
   }
 };
 
